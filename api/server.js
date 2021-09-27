@@ -46,7 +46,7 @@ server.get('/api/users', async (req, res)=>{
             })
         }
         else {
-            res.status(200).json(users)
+            res.status(201).json(users)
         }  
     } catch(err) {
         //handle error
@@ -67,7 +67,7 @@ server.get('/api/users/:id', async (req, res)=>{
             })
         }
         else{
-            res.status(200).json(user)
+            res.status(201).json(user)
         }
 
     }
@@ -80,9 +80,58 @@ server.get('/api/users/:id', async (req, res)=>{
 //Get Enpoints//
 
 //Delete Endpoints//
+server.delete('/api/users/:id', async (req, res)=>{
+    try{
+        const {id}=req.params;
+        const deletedUser=await Users.remove(id);
+        if(!deletedUser){
+            res.status(404).json({
+                message: "The user with the specified ID does not exist" 
+            })
+        }
+        else{
+            res.status(201).json(deletedUser)
+        }
+        }
+    catch(err){
+        res.status(500).json({
+            message: "The user could not be removed"
+        })
+    }
+} )
 //Delete Endpoints//
 
-//
+//Put Endpoints//
+server.put('/api/users/:id', async (req, res)=>{
+    try{
+        const {id}=req.params;
+        const {name, bio} = req.body;
+
+        const user = await Users.findById(id)
+        const updatedUser = await Users.update(id, {name,bio})
+
+        if(!user){
+            res.status(404).json({
+                message: "The user with the specified ID does not exist" 
+            })
+        } 
+        else if (!name || ! bio){
+            res.status(400).json({
+                message: "Please provide name and bio for the user" 
+            })
+        }
+        else {
+            res.status(200).json(updatedUser)
+        }
+    }
+
+    catch(err){
+        res.status(500).json({
+            message: "The user information could not be modified"
+        })
+    }
+})
+//Put Endpoints//
 
 
 
